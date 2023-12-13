@@ -55,10 +55,10 @@ def tx_detail_function():
         # Drop Switch Signage
         df = df.drop(columns='Tx Signage')
 
-        # Save Detailed Output
-        save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
-        os.chdir(save_directory)
-        df.to_csv('Tx Details.csv', index=False)
+        # # Save Detailed Output
+        # save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
+        # os.chdir(save_directory)
+        # df.to_csv('Tx Details.csv', index=False)
 
         # Create Pivot Table
         df['Subsidiary'] = df['Subsidiary'].fillna('Blank')

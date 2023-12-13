@@ -56,17 +56,19 @@ def accounting_period_function():
     # Convert Column Headings to Dates
     column_headers = df.columns[5:].tolist()
 
+    # Convert Column Headings to 'YYYY-MM-DD' format
     def convert_header_to_date(header):
-        month_abbr, year_abbr = header.split(' ')
-        month_number = datetime.strptime(month_abbr, '%b').strftime('%m')
-        formatted_date = f'{year_abbr}-{month_number}-01'
-        return datetime.strptime(formatted_date, '%Y-%m-%d').strftime('%d/%m/%Y')
+        # Check if the header is a date in the 'DD/MM/YYYY' format
+        if '/' in header:
+            day, month, year = header.split('/')
+            # Construct the date in 'YYYY-MM-DD' format
+            formatted_date = f'{year}-{month}-{day}'
+            return formatted_date
+        else:
+            return header
 
-    # Use list comprehension to apply the conversion to selected column headers
-    new_column_headers = [convert_header_to_date(header) for header in column_headers]
-
-    # Update the selected column headers in the DataFrame
-    df.columns = df.columns[:5].tolist() + new_column_headers
+    # Apply the conversion to all column headers
+    df.columns = [convert_header_to_date(header) for header in df.columns]
 
     # Create GL Category Index
     df['Running Count'] = df.groupby('GL Category').cumcount() + 1
@@ -78,6 +80,11 @@ def accounting_period_function():
     first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Category', 'GL Category Index', 'GL Group']
     remaining_cols = [col for col in cols if col not in first_cols]
     df = df[first_cols + remaining_cols]
+
+    # Save Output
+    save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
+    os.chdir(save_directory)
+    df.to_csv('Accounting Period.csv', index=False)
 
     return df
 
