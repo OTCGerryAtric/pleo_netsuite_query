@@ -55,11 +55,6 @@ def tx_detail_function():
         # Drop Switch Signage
         df = df.drop(columns='Tx Signage')
 
-        # # Save Detailed Output
-        # save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
-        # os.chdir(save_directory)
-        # df.to_csv('Tx Details.csv', index=False)
-
         # Create Pivot Table
         df['Subsidiary'] = df['Subsidiary'].fillna('Blank')
         df['Domain'] = df['Domain'].fillna('Blank')
@@ -69,6 +64,10 @@ def tx_detail_function():
         pivot_df['Marketing Category'] = np.where((pivot_df['Marketing Category'] != '620020') & (pivot_df['Marketing Category'] == 'Unknown'), '', pivot_df['Marketing Category'])
         pivot_df['Amount'] = pivot_df['Amount'].round(3)
         pivot_df = pivot_df.sort_values(by=['Month', 'GL Code'])
+
+        # Save Summary Output
+        save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
+        os.chdir(save_directory)
         pivot_df.to_csv('Tx Summary.csv', index=False)
     return df
 
