@@ -75,11 +75,16 @@ def accounting_period_function():
     df['GL Category Index'] = df['GL Category'] + ' ' + df['Running Count'].astype(str)
     df = df.drop(columns=['Running Count'])
 
+    # Check GL Number
+    df['Check GL'] = df['Financial Row'].str[:6]
+    df['GL Code'] = np.where(df['Check GL'] == df['GL Code'], df['GL Code'], df['Check GL'])
+
     # Finalise Output
     cols = df.columns.tolist()
     first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Category', 'GL Category Index', 'GL Group']
     remaining_cols = [col for col in cols if col not in first_cols]
     df = df[first_cols + remaining_cols]
+    df = df.drop(columns=['Check GL'])
 
     # Save Output
     save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
