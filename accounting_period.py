@@ -81,7 +81,7 @@ def accounting_period_function():
 
     # Finalise Output
     cols = df.columns.tolist()
-    first_cols = ['Financial Row', 'GL Code', 'GL Class', 'GL Name', 'GL Category', 'GL Category Index', 'GL Group']
+    first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Class', 'GL Category', 'GL Category Index', 'GL Group']
     remaining_cols = [col for col in cols if col not in first_cols]
     df = df[first_cols + remaining_cols]
     df = df.drop(columns=['Check GL'])
@@ -90,6 +90,12 @@ def accounting_period_function():
     save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
     os.chdir(save_directory)
     df.to_csv('Accounting Period.csv', index=False)
+
+    # Save Missing GL's
+    df = df.loc[df['GL Category'].isna()]
+    df = df.iloc[:, :7]
+    df = df.drop_duplicates()
+    df.to_csv("Missing GL's.csv", index=False)
 
     return df
 
