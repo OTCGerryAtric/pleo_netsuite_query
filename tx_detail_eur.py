@@ -50,7 +50,7 @@ def tx_detail_function():
         df = df.rename(columns={'Marketing expenses': 'Marketing Category'})
 
         # Apply Mapping Data
-        df = pd.merge(df, gl_mapping_data[['GL Code', 'GL Category', 'GL Group', 'Tx Signage']], on='GL Code', how='left')
+        df = pd.merge(df, gl_mapping_data[['GL Code', 'GL Class', 'GL Category', 'GL Group', 'Tx Signage']], on='GL Code', how='left')
 
         # Apply Function Data
         df = pd.merge(df, function_mapping_data[['Domain', 'Competence', 'Function']], on=['Domain', 'Competence'], how='left')
@@ -63,11 +63,11 @@ def tx_detail_function():
 
         # Create Pivot Table
         df['Subsidiary'] = df['Subsidiary'].fillna('Blank')
+        df['Function'] = df['Function'].fillna('Blank')
         df['Domain'] = df['Domain'].fillna('Blank')
         df['Competence'] = df['Competence'].fillna('Blank')
-        df['Function'] = df['Function'].fillna('Blank')
         df['Marketing Category'] = df['Marketing Category'].fillna('Unknown')
-        pivot_df = df.groupby(['Month', 'GL Code', 'GL Name', 'Subsidiary', 'Function', 'Domain', 'Competence', 'Marketing Category'])['Amount'].sum().reset_index()
+        pivot_df = df.groupby(['Month', 'GL Code', 'GL Name', 'GL Class', 'GL Category', 'Subsidiary', 'Function', 'Domain', 'Competence', 'Marketing Category'])['Amount'].sum().reset_index()
         pivot_df['Marketing Category'] = np.where((pivot_df['Marketing Category'] != '620020') & (pivot_df['Marketing Category'] == 'Unknown'), '', pivot_df['Marketing Category'])
         pivot_df['Amount'] = pivot_df['Amount'].round(3)
         pivot_df = pivot_df.sort_values(by=['Month', 'GL Code'])

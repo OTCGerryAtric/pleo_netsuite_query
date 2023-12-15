@@ -31,19 +31,19 @@ def accounting_period_function():
     df = df.loc[df['GL Name'].notna()]
 
     # Apply Mapping Data
-    df = pd.merge(df, gl_mapping_data[['GL Code', 'GL Category', 'GL Group', 'Signage']], on='GL Code', how='left')
+    df = pd.merge(df, gl_mapping_data[['GL Code', 'GL Class', 'GL Category', 'GL Group', 'Signage']], on='GL Code', how='left')
     df['GL Code'] = gl_mapping_data['GL Code'].astype(str)
 
     # Cleaned Output
     cols = df.columns.tolist()
-    first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Category', 'GL Group', 'Signage']
+    first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Class', 'GL Category', 'GL Group', 'Signage']
     remaining_cols = [col for col in cols if col not in first_cols]
     df = df[first_cols + remaining_cols]
     df = df.drop('Total', axis=1)
-    df.iloc[:, 6:] = df.iloc[:, 6:].apply(lambda x: x.str.replace('€', '').str.replace(',', '.').str.replace(' ', ''))
+    df.iloc[:, 7:] = df.iloc[:, 7:].apply(lambda x: x.str.replace('€', '').str.replace(',', '.').str.replace(' ', ''))
 
     # Convert relevant columns to numeric
-    numeric_columns = df.columns[6:]
+    numeric_columns = df.columns[7:]
     df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors='coerce')
 
     # Apply the function to change signage to the numeric columns
@@ -76,12 +76,12 @@ def accounting_period_function():
     df = df.drop(columns=['Running Count'])
 
     # Check GL Number
-    df['Check GL'] = df['Financial Row'].str[:6]
+    df['Check GL'] = df['Financial Row'].str[:7]
     df['GL Code'] = np.where(df['Check GL'] == df['GL Code'], df['GL Code'], df['Check GL'])
 
     # Finalise Output
     cols = df.columns.tolist()
-    first_cols = ['Financial Row', 'GL Code', 'GL Name', 'GL Category', 'GL Category Index', 'GL Group']
+    first_cols = ['Financial Row', 'GL Code', 'GL Class', 'GL Name', 'GL Category', 'GL Category Index', 'GL Group']
     remaining_cols = [col for col in cols if col not in first_cols]
     df = df[first_cols + remaining_cols]
     df = df.drop(columns=['Check GL'])
