@@ -12,6 +12,9 @@ def tx_detail_function():
     gl_mapping_data = pd.read_csv('GL Mapping File.csv')
     gl_mapping_data['GL Code'] = gl_mapping_data['GL Code'].astype(str)
 
+    # Importing Function Data
+    function_mapping_data = pd.read_csv('Function Mapping File.csv')
+
     # Change Directory
     directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code\NetSuite Extract'
     os.chdir(directory)
@@ -49,6 +52,9 @@ def tx_detail_function():
         # Apply Mapping Data
         df = pd.merge(df, gl_mapping_data[['GL Code', 'GL Category', 'GL Group', 'Tx Signage']], on='GL Code', how='left')
 
+        # Apply Function Data
+        df = pd.merge(df, function_mapping_data[['Domain', 'Competence', 'Function']], on=['Domain', 'Competence'], how='left')
+
         # Apply the function to change signage to the numeric columns
         df['Amount'] = df['Amount'] * df['Tx Signage']
 
@@ -59,8 +65,9 @@ def tx_detail_function():
         df['Subsidiary'] = df['Subsidiary'].fillna('Blank')
         df['Domain'] = df['Domain'].fillna('Blank')
         df['Competence'] = df['Competence'].fillna('Blank')
+        df['Function'] = df['Function'].fillna('Blank')
         df['Marketing Category'] = df['Marketing Category'].fillna('Unknown')
-        pivot_df = df.groupby(['Month', 'GL Code', 'GL Name', 'Subsidiary', 'Domain', 'Competence', 'Marketing Category'])['Amount'].sum().reset_index()
+        pivot_df = df.groupby(['Month', 'GL Code', 'GL Name', 'Subsidiary', 'Function', 'Domain', 'Competence', 'Marketing Category'])['Amount'].sum().reset_index()
         pivot_df['Marketing Category'] = np.where((pivot_df['Marketing Category'] != '620020') & (pivot_df['Marketing Category'] == 'Unknown'), '', pivot_df['Marketing Category'])
         pivot_df['Amount'] = pivot_df['Amount'].round(3)
         pivot_df = pivot_df.sort_values(by=['Month', 'GL Code'])
@@ -69,6 +76,12 @@ def tx_detail_function():
         save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
         os.chdir(save_directory)
         pivot_df.to_csv('Tx Summary.csv', index=False)
+
+        # Create Missing Functions
+        pivot_df = pivot_df.loc[pivot_df['Function'] == 'Blank']
+        pivot_df = pivot_df[['Domain', 'Competence']].drop_duplicates()
+        pivot_df.to_csv('Missing Functions.csv', index=False)
+
     return df
 
 # Call the function to create and process the DataFrame and assign it to a variable

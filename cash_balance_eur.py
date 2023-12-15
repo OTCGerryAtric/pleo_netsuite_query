@@ -63,7 +63,7 @@ def cash_balance_function():
         # Save Detailed Output
         save_directory = r'I:\Shared drives\FP&A\Month End\00 - Python Code'
         os.chdir(save_directory)
-        df.to_csv('Bank Account Summary.csv', index=False)
+        df.to_csv('Bank Account Detail.csv', index=False)
 
         return df
 
